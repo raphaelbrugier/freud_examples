@@ -93,13 +93,4 @@ public class AppTest {
 			analyser.analyse(listener);
 	}
 	
-	@Test
-	@Ignore
-	public void domainClassHaveCreateMethod() throws Exception {
-		FreudAnalyser analyser = Freud.iterateOver(CodeBlock.class).
-	        	assertThat(CodeBlockDsl.method(methodName().matches("create"))).within(javaSourcesIterator);
-			
-			AnalysisListener listener = new AssertionErrorAnalysisListener();
-			analyser.analyse(listener);
-	}
 }
