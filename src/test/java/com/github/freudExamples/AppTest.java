@@ -1,17 +1,14 @@
 package com.github.freudExamples;
 
-import static org.junit.Assert.*;
 import static org.langera.freud.core.matcher.FreudDsl.no;
 import static org.langera.freud.optional.classfile.method.ClassFileMethodDsl.hasMethodInvocation;
 import static org.langera.freud.optional.javasource.block.CodeBlockDsl.codeBlockLines;
 import static org.langera.freud.optional.javasource.importdecl.ImportDeclarationDsl.importDeclaration;
-import static org.langera.freud.optional.javasource.methoddecl.MethodDeclarationDsl.methodName;
 
 import java.io.File;
 import java.io.FilenameFilter;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.langera.freud.core.Freud;
 import org.langera.freud.core.FreudAnalyser;
@@ -33,25 +30,24 @@ import org.langera.freud.optional.javasource.packagedecl.PackageDeclarationDsl;
 public class AppTest {
 	
 	private static FilenameFilter ACCEPT_ALL_FILTER = new FilenameFilter() {
-		
 		public boolean accept(File dir, String name) {
 			return true;
 		}
 	};
 	
-	AnalysedObjectIterator<JavaSource> javaSourcesIterator;
-	AnalysedObjectIterator<ClassFile> classFilesIterator;
+	AnalysedObjectIterator<JavaSource> javaSources;
+	AnalysedObjectIterator<ClassFile> classFiles;
 	
 	@Before
 	public void setup () {
-		javaSourcesIterator = ResourceIterators.filesByPathResourceIterator(JavaSourceJdom.PARSER, ACCEPT_ALL_FILTER , true, new File("src/main/java/").getAbsolutePath());
-		classFilesIterator = ResourceIterators.filesByPathResourceIterator(new AsmClassFileParser(null), ACCEPT_ALL_FILTER , true, new File("target/classes/").getAbsolutePath());
+		javaSources = ResourceIterators.filesByPathResourceIterator(JavaSourceJdom.PARSER, ACCEPT_ALL_FILTER , true, new File("src/main/java/").getAbsolutePath());
+		classFiles = ResourceIterators.filesByPathResourceIterator(new AsmClassFileParser(null), ACCEPT_ALL_FILTER , true, new File("target/classes/").getAbsolutePath());
 	}
 	
 	@Test
 	public void packageDeclaration() throws Exception {
 		FreudAnalyser analyser = Freud.iterateOver(PackageDeclaration.class).
-	        	assertThat(PackageDeclarationDsl.packageDeclaration().matches("com.github.freudExamples.*")).within(javaSourcesIterator);
+	        	assertThat(PackageDeclarationDsl.packageDeclaration().matches("com.github.freudExamples.*")).within(javaSources);
 			
 			AnalysisListener listener = new AssertionErrorAnalysisListener();
 			analyser.analyse(listener);
@@ -60,7 +56,7 @@ public class AppTest {
 	@Test
 	public void lessThan250Lines() throws Exception {
 		FreudAnalyser analyser = Freud.iterateOver(CodeBlock.class).
-        	assertThat(codeBlockLines().lessThanOrEqualTo(250)).within(javaSourcesIterator);
+        	assertThat(codeBlockLines().lessThanOrEqualTo(250)).within(javaSources);
 		
 		AnalysisListener listener = new AssertionErrorAnalysisListener();
 		analyser.analyse(listener);
@@ -69,7 +65,7 @@ public class AppTest {
 	@Test
 	public void noDateUtil() throws Exception {
 		FreudAnalyser analyser = Freud.iterateOver(ImportDeclaration.class).
-	        	assertThat(no(importDeclaration().matches("java.util.Date"))).within(javaSourcesIterator);
+	        	assertThat(no(importDeclaration().matches("java.util.Date"))).within(javaSources);
 			
 			AnalysisListener assertionListener = new AssertionErrorAnalysisListener();
 			analyser.analyse(assertionListener);
@@ -78,7 +74,7 @@ public class AppTest {
 	@Test
 	public void noStringBuffer() throws Exception {
 		FreudAnalyser analyser = Freud.iterateOver(ClassFileMethod.class).
-				assertThat(no(hasMethodInvocation(StringBuffer.class, "<init>"))).within(classFilesIterator);
+				assertThat(no(hasMethodInvocation(StringBuffer.class, "<init>"))).within(classFiles);
 			
 			AnalysisListener listener = new AssertionErrorAnalysisListener();
 			analyser.analyse(listener);
@@ -87,7 +83,7 @@ public class AppTest {
 	@Test
 	public void noSystemGC() throws Exception {
 		FreudAnalyser analyser = Freud.iterateOver(CodeBlock.class).
-	        	assertThat(no(CodeBlockDsl.hasMethodCall("System.gc"))).within(javaSourcesIterator);
+	        	assertThat(no(CodeBlockDsl.hasMethodCall("System.gc"))).within(javaSources);
 			
 			AnalysisListener listener = new AssertionErrorAnalysisListener();
 			analyser.analyse(listener);
