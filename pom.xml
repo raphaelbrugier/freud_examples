@@ -51,7 +51,13 @@
 			<artifactId>asm-all</artifactId>
 			<version>3.3.1</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>2.2</version>
+		</dependency>
+
+	<!-- freud is embedded as a library because its available in any maven repo		 -->
 		<dependency>
 			<groupId> org.langera</groupId>
 			<artifactId>freud</artifactId>
