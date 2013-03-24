@@ -36,12 +36,12 @@ public class DevoxxExamplesTest {
 	
 	@Test
 	public void noDateUtil() throws Exception {
-		FreudAnalyser analyser = Freud.iterateOver(JavaSource.class).
+		FreudAnalyser freudAnalyser = Freud.iterateOver(JavaSource.class).
 	        	assertThat(no(importDeclarations().matches("java.util.Date")))
 	        	.in(javaSources);
 		
 			AnalysisListener assertionListener = new AssertionErrorAnalysisListener();
-			analyser.analyse(assertionListener);
+			freudAnalyser.analyse(assertionListener);
 	}
 	
 }
